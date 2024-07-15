@@ -70,6 +70,14 @@ static void event_callback(const struct device *dev, struct gpio_callback *cb, u
 		printk("Vbus removed\n");
 		vbus_connected = false;
 	}
+
+	if (pins & BIT(NPM1300_EVENT_VBUS_CC1_CHANGE)) {
+		printk("CC1 state change\n");
+	}
+
+	if (pins & BIT(NPM1300_EVENT_VBUS_CC2_CHANGE)) {
+		printk("CC2 state change\n");
+	}
 }
 
 bool configure_events(void)
@@ -96,10 +104,11 @@ bool configure_events(void)
 
 	static struct gpio_callback event_cb;
 
-	gpio_init_callback(&event_cb, event_callback,
-			   BIT(NPM1300_EVENT_SHIPHOLD_PRESS) | BIT(NPM1300_EVENT_SHIPHOLD_RELEASE) |
-				   BIT(NPM1300_EVENT_VBUS_DETECTED) |
-				   BIT(NPM1300_EVENT_VBUS_REMOVED));
+	gpio_init_callback(
+		&event_cb, event_callback,
+		BIT(NPM1300_EVENT_SHIPHOLD_PRESS) | BIT(NPM1300_EVENT_SHIPHOLD_RELEASE) |
+			BIT(NPM1300_EVENT_VBUS_DETECTED) | BIT(NPM1300_EVENT_VBUS_REMOVED) |
+			BIT(NPM1300_EVENT_VBUS_CC1_CHANGE) | BIT(NPM1300_EVENT_VBUS_CC2_CHANGE));
 
 	mfd_npm1300_add_callback(pmic, &event_cb);
 
